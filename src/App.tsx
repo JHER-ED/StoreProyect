@@ -1,31 +1,31 @@
 import{ useState,useEffect } from 'react';
 import './App.css'
-import Products from './components/Products';
 import axios from 'axios';
+import Insumos from './components/Insumos';
 
 function App() {
-  const [Products, setProducts] = useState([]);
+  const [insumosData, setInsumos] = useState([]);
 
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchInsumos = async () => {
       try {
         const response = await axios.get('https://fakestoreapi.com/products');
-        setProducts(response.data);
+        setInsumos(response.data);
       }
       catch (error) {
         console.log('Error al consultar los productos');
       }
     }
-    fetchProducts();
+    fetchInsumos();
   }, []);
 
-  console.log(Products);
+  console.log(insumosData);
 
   return (
     <>
       <h1>Proyecto Final</h1>
-      <Products />
+      <Insumos />
     </>
   )
 }
