@@ -1,19 +1,45 @@
 import{ useState,useEffect } from 'react';
 import './App.css'
 import axios from 'axios';
-import Insumos from './components/Insumos';
+import InsumosCard from './components/InsumosCard';
+import ProductsList from './components/ProductsList';
+
+export interface Rating {
+  rate: number;
+  count: number;
+}
+
+export interface Insumo{
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  category: string;
+  image: string;
+  rating: Rating;
+}
 
 function App() {
-  const [insumosData, setInsumos] = useState([]);
-
+  const [insumosData, setInsumos] = useState<Insumo[]>([]);
+  const [Loading,setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchInsumos = async () => {
+    const fetchInsumos = async (): Promise<void> => {
       try {
-        const response = await axios.get('https://fakestoreapi.com/products');
+        const response = await axios.get<Insumo[]>('https://fakestoreapi.com/products');
         setInsumos(response.data);
+        setLoading(false);
+
       }
       catch (error) {
+        if (error instanceof Error) {
+          setLoading(false);
+          setError(error.message);
+        } else {
+          setLoading(false);
+          setError('Error al cargar los productos');
+        }
         console.log('Error al consultar los productos');
       }
     }
@@ -22,10 +48,17 @@ function App() {
 
   console.log(insumosData);
 
+  if(Loading){
+    return (<div className="flex justify-center items-center h-screen"><div className="loader"></div></div>)
+  }
+  if(error){
+    return <p>Error al cargar los productos</p>
+  }
+
   return (
     <>
       <h1>Proyecto Final</h1>
-      <Insumos />
+      <ProductsList insumos={insumosData} />
     </>
   )
 }
