@@ -52,7 +52,7 @@ function App() {
     return (<div className="flex justify-center items-center h-screen"><div className="loader"></div></div>)
   }
   if(error){
-    return <p>Error al cargar los productos</p>
+    return <p className="flex justify-center items-center h-screen text-5xl text-red-800 "> ): Error al cargar los productos :(</p>
   }
 
   return (
