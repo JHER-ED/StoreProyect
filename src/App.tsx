@@ -59,8 +59,9 @@ function App() {
   //Lo usamos para filtrar eficientemente los productos según el término de búsqueda
   const filteredInsumos = useMemo(() => {
     console.log("Filtrando insumos...");
+    //A continuación en lugar de includdes se puede utilizar startsWith.
     return insumosData.filter((insumo) =>
-      insumo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      insumo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||//toLowerCase() para hacer la búsqueda insensible a mayúsculas y minúsculas
       insumo.description.toLowerCase().includes(searchTerm.toLowerCase()) 
     );
   }, [insumosData, searchTerm]); //<- dependencias - se recalcula solo si insumosData o searchTerm cambian
