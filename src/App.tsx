@@ -1,77 +1,72 @@
-import{ useState,useEffect,useRef, useMemo } from 'react'; //se importaron los hooks necesarios
+import{ useState,useEffect,useRef, useMemo, useReducer } from 'react'; //se importaron los hooks necesarios
 import './App.css'
 import axios from 'axios';
 import InsumosCard from './components/InsumosCard';
 import ProductsList from './components/ProductsList';
+import type { Insumo, FetchState } from './helpers/interfaces'; //importamos el tipo Insumo
 
-export interface Rating {
-  rate: number;
-  count: number;
-}
 
-export interface Insumo{
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
-  rating: Rating;
+const initialState:FetchState= {
+  data: [],
+  loading: true,
+  error: null
+};
+
+/* const FetchAction =
+  | { type: 'FETCH_INIT' }
+  | { type: 'FETCH_SUCCESS'; payload: Insumo[] }
+  | { type: 'FETCH_ERROR'; payload: string }; */
+
+function fetchReducer(state:FetchState,action:any):FetchState{
+  switch (action.type) {
+    case 'FETCH_INIT':
+      return { ...state, loading: true, error: null };
+    case 'FETCH_SUCCESS':
+      return { ...state, data: action.payload, loading: false };
+    case 'FETCH_ERROR':
+      return { ...state, loading: false, error: action.payload };
+    default:
+      return state;
+  }
 }
 
 function App() {
-  const [insumosData, setInsumos] = useState<Insumo[]>([]);
-  const [Loading,setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [state,dispatch] = useReducer(fetchReducer,initialState);
   const [searchTerm, setSearchTerm] = useState<string>('');//<- estado para la busqueda
   const searchInputRef = useRef<HTMLInputElement>(null);//referencia para el input de busqueda
 
   useEffect(() => {
     const fetchInsumos = async (): Promise<void> => {
+      dispatch({type:"FETCH_INIT"}); //Inicia la carga de datos
       try {
         const response = await axios.get<Insumo[]>('https://fakestoreapi.com/products');
-        setInsumos(response.data);
-        /* setLoading(false); */ //Colocado en el finally para asegurar que se ejecute siempre
-
-      }
-      catch (error) {
-        if (error instanceof Error) {
-          /* setLoading(false); */ // Colocado en el finally para asegurar que se ejecute siempre
-          setError(error.message);
-        } else {
-          /* setLoading(false); */ // Colocado en el finally para asegurar que se ejecute siempre 
-          setError('Error al cargar los productos');
-        }
-        console.log('Error al consultar los productos');
-      }
-      finally {
-        setLoading(false); //Se ejecuta siempre, independientemente de si hubo error o no 
-      }
-    }
+        dispatch({type:"FETCH_SUCCESS",payload:response.data});
+      } catch (error) {
+        const message= "Hubo un error al cargar los productos"
+        dispatch ({type:"FETCH_ERROR",payload: message});
+      } 
+    };
     fetchInsumos();
-  }, []);
+  },[]);
 
-  //los usamos para poner el foco en el input *REVISAR*
+  //los usamos para poner el foco en el input
   useEffect(() => {
     searchInputRef.current?.focus();
-  },[])
+  },[state.loading]);
 
   //Lo usamos para filtrar eficientemente los productos según el término de búsqueda
   const filteredInsumos = useMemo(() => {
-    console.log("Filtrando insumos...");
-    //A continuación en lugar de includdes se puede utilizar startsWith.
-    return insumosData.filter((insumo) =>
-      insumo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||//toLowerCase() para hacer la búsqueda insensible a mayúsculas y minúsculas
-      insumo.description.toLowerCase().includes(searchTerm.toLowerCase()) 
+    //A continuación en lugar de includes se puede utilizar startsWith.
+    return state.data.filter(({title,description}) =>
+      title.toLowerCase().includes(searchTerm.toLowerCase()) ||//toLowerCase() para hacer la búsqueda insensible a mayúsculas y minúsculas
+      description.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [insumosData, searchTerm]); //<- dependencias - se recalcula solo si insumosData o searchTerm cambian
+  }, [state.data, searchTerm]); //<- dependencias - se recalcula solo si insumosData o searchTerm cambian
 
-  /* console.log(insumosData); */
-
-  if(Loading){
+  if(state.loading){
     return (<div className="flex justify-center items-center h-screen"><div className="loader"></div></div>)
   }
-  if(error){
+  if(state.error){
     return <p className="flex justify-center items-center h-screen text-5xl text-red-800 "> ): Error al cargar los productos :(</p>
   }
 

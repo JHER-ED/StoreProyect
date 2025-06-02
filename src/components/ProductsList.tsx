@@ -1,4 +1,4 @@
-import type { Insumo } from '../App';
+import type { Insumo } from '../helpers/interfaces';
 import  InsumosCard  from './InsumosCard';
 
 interface ProductsListProps {
