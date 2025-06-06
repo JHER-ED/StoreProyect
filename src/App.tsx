@@ -76,12 +76,12 @@ function App() {
   }
 
   return (
-    <div className="p-4 container mx-auto">
-        <h1 className="text-4xl font-bold text-center my-6 text-gray-900">Lista de Productos</h1>
+    <div className="p-4 container mx-auto bg-gradient-to-b from-amber-200 to-amber-900">
+        <h1 id="title" className="text-6xl font-bold text-center my-6 text-red-900 ">Pixel Moda Urbana</h1>
         <div className="mb-6 flex justify-center">
           <div className="relative w-full max-w-lg">
-          <input type="text" className="border border-gray-300 rounded-lg p-2 w-full max-w-lg shadow-lg focus:outline-none focus:ring-2 
-          focus:ring-blue-500" 
+          <input type="text" className="border border-gray-400 rounded-lg p-2 w-full max-w-lg shadow-lg focus:outline-none focus:ring-2 
+          focus:ring-amber-500 bg-white" 
           placeholder="Buscar productos..."
           ref={searchInputRef}
           value={searchTerm}
@@ -100,7 +100,7 @@ function App() {
     </button>)}
         </div>
 
-          <button onClick={handleSearch} className="bg-blue-600 text-white font-semibold rounded-lg px-4 py-2 shadow-lg hover:bg-blue-800 transition-colors ml-2">
+          <button onClick={handleSearch} className="bg-amber-600 text-white font-semibold rounded-lg px-4 py-2 shadow-lg hover:bg-amber-800 transition-colors ml-2">
           Buscar <img src="https://img.icons8.com/ios-filled/50/ffffff/search.png" alt="Buscar" className="inline-block w-5 h-5" />
         </button></div>
 
